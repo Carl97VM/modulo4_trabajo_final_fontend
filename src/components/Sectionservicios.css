@@ -1,0 +1,107 @@
+.services-section {
+    padding: 20px 30px;
+    background-color: #f3f6f9;
+  }
+  
+  .container-Services {
+    display: grid;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .services-section h2 {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 30px;
+  }
+
+  .masInfo{
+    color:#006a65 !important;
+  }
+  
+  .services-grid {
+    display: flex;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 40px;
+  }
+  
+  .service-card {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .service-icon {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 15px;
+  }
+  
+  .service-card h3 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .service-card p {
+    line-height: 1.6;
+  }
+  
+  .services-cta {
+    text-align: center;
+    margin-top: 30px;
+  }
+  
+  .services-cta a {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .services-cta a:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Hover Effect for Service Cards */
+  .service-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: scale(1.02);
+  }
+  
+  /* Responsive Design */
+  /* @media (max-width: 768px) {
+    .services-grid {
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+  } */
+
+  .service-card {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .service-icon {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 15px;
+  }
+  
+  .service-card h3 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .service-card p {
+    line-height: 1.6;
+  }

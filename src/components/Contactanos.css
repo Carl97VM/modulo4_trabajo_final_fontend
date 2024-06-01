@@ -1,0 +1,24 @@
+.contactos-section {
+    padding: 20px 30px;
+    background-color: #f0f2f5;
+  }
+  
+  .container-contactos {
+    text-align: center;
+    display: grid;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .contactos-section h2 {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 30px;
+  }
+  
+  .contactos-grid {
+    display: flex;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+  }

@@ -1,0 +1,44 @@
+{
+  "name": "material-ui-nextjs-ts",
+  "version": "5.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 8080",
+    "build": "next build",
+    "start": "next start -p 8080",
+    "lint": "next lint",
+    "post-update": "echo \"codesandbox preview only, need an update\" && pnpm update --latest"
+  },
+  "dependencies": {
+    "@emotion/cache": "11.11.0",
+    "@emotion/react": "11.11.4",
+    "@emotion/server": "11.11.0",
+    "@emotion/styled": "11.11.5",
+    "@mui/icons-material": "5.15.18",
+    "@mui/material": "5.15.18",
+    "@mui/material-nextjs": "5.15.11",
+    "@mui/x-date-pickers": "5.0.20",
+    "axios": "1.7.1",
+    "cors": "^2.8.5",
+    "dayjs": "1.11.10",
+    "js-cookie": "3.0.5",
+    "material-icons": "1.13.12",
+    "next": "14.2.2",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-hook-form": "7.51.4"
+  },
+  "devDependencies": {
+    "@types/js-cookie": "3.0.6",
+    "@types/node": "20.12.12",
+    "@types/react": "18.2.0",
+    "@types/react-dom": "18.2.0",
+    "@typescript-eslint/eslint-plugin": "7.7.0",
+    "@typescript-eslint/parser": "7.7.0",
+    "eslint": "8.57.0",
+    "eslint-config-next": "14.2.2",
+    "eslint-config-prettier": "9.1.0",
+    "prettier": "3.2.5",
+    "typescript": "5.4.5"
+  }
+}
