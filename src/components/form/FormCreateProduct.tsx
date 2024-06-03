@@ -76,7 +76,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({ open, onClos
         });
         imprimir(response)
         setResumenData(response);
-        setReloadData(true);
+        setReloadData(true); // Esto desencadenará una nueva renderización de la tabla
         onSubmit(formData);
         toast.success('Producto modificado con éxito!');
       } else {
@@ -92,7 +92,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({ open, onClos
         });
         imprimir(response)
         setResumenData(response);
-        setReloadData(true);
+        setReloadData(true); // Esto desencadenará una nueva renderización de la tabla
         onSubmit(formData);
         toast.success('Producto guardado con éxito!');
       }
@@ -102,6 +102,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({ open, onClos
       toast.error('Hubo un error al realizar la accion');
     }
   };
+  
   
   return (
     <Dialog open={open} onClose={onClose}>

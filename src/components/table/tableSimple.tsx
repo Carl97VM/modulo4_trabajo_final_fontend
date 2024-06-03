@@ -29,7 +29,7 @@ export const TableComponent: React.FC<TableComponentProps> = ({ products, onEdit
             <TableCell>{product.price}</TableCell>
             <TableCell>
               <Button onClick={() => onEdit(product.id.toString())}>Editar <EditIcon /></Button>
-              <Button onClick={() => onDelete(product.id)} color="warning">Eliminar <DeleteIcon /></Button>
+              <Button onClick={() => onDelete(product.id)}>Eliminar <DeleteIcon /></Button>
             </TableCell>
           </TableRow>
         ))}

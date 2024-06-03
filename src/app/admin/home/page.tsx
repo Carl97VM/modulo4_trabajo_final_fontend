@@ -22,29 +22,35 @@ import '../../../styles/globals.css'
 
 const AdminHomePage = () => {
   const [resumenData, setResumenData] = useState<productType[]>([])
-  const [resumenDataDelete, setResumenDataDelete] = useState<productId>()
   const [reloadData, setReloadData] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [currentProductId, setCurrentProductId] = useState<string | undefined>(undefined)
-  const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
-  const [currentProductIdDelete, setCurrentProductIdDelete] = useState<string | undefined>(undefined)
 
   const handleOpenModal = (productId: string | undefined = undefined) => {
     setCurrentProductId(productId)
     setIsModalOpen(true)
   }
-  const handleDeleteConfirm = (productId: string) => {
-    setCurrentProductIdDelete(productId);
-    setIsModalOpenDelete(true);
-  };
-  const handleCloseModalDelete = () => {
-    setIsModalOpenDelete(false);
-    setCurrentProductIdDelete(undefined)
-  }
 
   const handleCloseModal = () => {
     setIsModalOpen(false)
     setCurrentProductId(undefined)
+  }
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [productIdToDelete, setProductIdToDelete] = useState<string | undefined>(undefined)
+
+  const handleOpenDeleteModal = (productId: string) => {
+    setProductIdToDelete(productId)
+    setIsDeleteModalOpen(true)
+  }
+
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModalOpen(false)
+    setProductIdToDelete(undefined)
+  }
+  const handleDeleteSubmit = (productId: string) => {
+    setResumenData((prevData) => prevData.filter((product) => product.id !== productId))
+    setReloadData(true);
   }
 
   const handleFormSubmit = (formData: productSave) => {
@@ -68,13 +74,6 @@ const AdminHomePage = () => {
     })
     handleCloseModal()
   }
-  const handleFormSubmitDelete = (formData: productId) => {
-    const newProduct: productId = {
-      ...formData,
-      id: '',
-    }
-    handleCloseModalDelete()
-  }
 
   const fetchProducts = async () => {
     const token = leerCookie('token')
@@ -94,24 +93,6 @@ const AdminHomePage = () => {
       redirect('/login')
     }
   }
-
-  const handleDelete = async (productId: string) => {
-    try {
-      const token = leerCookie('token');
-      const response = await WebService.delete({
-        url: `${Constantes.baseUrl}/api/products/${productId}`,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      imprimir(response)
-      toast.success('Producto eliminado con éxito!');
-      setReloadData(true); // Esto desencadenará el useEffect en AdminHomePage.tsx
-    } catch (error) {
-      console.error('Error deleting product:', error);
-      toast.error('Hubo un error al eliminar el producto.');
-    }
-  };
 
 
   useEffect(() => {
@@ -137,7 +118,7 @@ const AdminHomePage = () => {
           <Typography variant="h6" component="p">
             Registros
           </Typography>
-          <TableComponent products={resumenData} onEdit={handleOpenModal} onDelete={handleDeleteConfirm} />
+          <TableComponent products={resumenData} onEdit={handleOpenModal} onDelete={handleOpenDeleteModal} />
         </CardContent>
       </Card>
 
@@ -150,15 +131,16 @@ const AdminHomePage = () => {
           setReloadData={setReloadData}
         />
       )}
-      {isModalOpenDelete && (
+      {isDeleteModalOpen && (
         <ConfirmDeleteModal
-          open={isModalOpenDelete}
-          onClose={handleCloseModalDelete}
-          onSubmit={handleFormSubmitDelete}
-          productId={currentProductIdDelete}
-          setReloadData={setReloadData}
+          open={isDeleteModalOpen}
+          onClose={handleCloseDeleteModal}
+          onSubmit={handleDeleteSubmit}
+          productId={productIdToDelete}
+          setReloadData={setReloadData} // Asegúrate de pasar esta función
         />
       )}
+
     </Container>
   )
 }

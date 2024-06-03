@@ -1,88 +1,101 @@
 import React, { useEffect, useState } from 'react';
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from '@mui/material';
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Typography
+} from '@mui/material';
 import { productId } from '../../types/Products';
 import { WebService } from '../../services'; // Importa el WebService
 import { leerCookie } from '../../utils/cookies';
-import { Constantes } from '../../config'
-import { imprimir } from '../../utils/imprimir'
+import { Constantes } from '../../config';
+import { imprimir } from '../../utils/imprimir';
 import { toast } from 'react-toastify';
-import '../../styles/globals.css'
+import '../../styles/globals.css';
 
 interface ConfirmDeleteModalProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: (formData: productId) => void;
+  onSubmit: (productId: string) => void;
   productId?: string;
   setReloadData: (value: boolean) => void;
 }
 
+
 export const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({ open, onClose, onSubmit, productId }) => {
-  const [resumenData, setResumenData] = useState<productId[]>([])
-  const [id, setId] = useState('');
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
   const [reloadData, setReloadData] = useState(false);
 
   useEffect(() => {
     if (productId) {
-      // Fetch product data for editing
+      // Fetch product data for display
       const fetchProduct = async () => {
         const token = leerCookie('token');
         try {
-          const response = await WebService.delete({
-            url: `${Constantes.baseUrl}/api/products/${productId}`, // Cambia esto a la ruta relativa
+          const response = await WebService.get({
+            url: `${Constantes.baseUrl}/api/products/${productId}`,
             headers: {
               Authorization: `Bearer ${token}`,
             },
           });
-          setId(response.id);
-          setReloadData(false);
+          imprimir(response)
+          setName(response.name);
+          setDescription(response.description);
         } catch (error) {
           console.error('Error fetching product:', error);
         }
       };
       fetchProduct();
     } else {
-      // Reset form for new product
-      setId('');
+      setName('');
+      setDescription('');
     }
   }, [productId]);
-  const onConfirm = async () => {
+
+  // En el componente ConfirmDeleteModal
+  // Llama a onSubmit con el ID del producto después de eliminar con éxito el producto
+  const handleDelete = async () => {
     try {
-      const formData = { id }
       const token = leerCookie('token');
       const response = await WebService.delete({
         url: `${Constantes.baseUrl}/api/products/${productId}`,
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        body: formData,
       });
       imprimir(response)
-      setReloadData(true);
-      onSubmit(formData);
+      onSubmit(productId || ''); // Aquí se pasa el ID del producto
       toast.success('Producto eliminado con éxito!');
+      onClose();
     } catch (error) {
       console.error('Error deleting product:', error);
       toast.error('Hubo un error al eliminar el producto.');
     }
   };
-  
-  
+
+
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-    >
-      <DialogTitle>{"¿Estás seguro?"}</DialogTitle>
+    <Dialog open={open} onClose={onClose}>
+      <DialogTitle>Eliminar Producto</DialogTitle>
       <DialogContent>
-        <DialogContentText>
-          Esta acción eliminará el producto y no se puede deshacer.
-        </DialogContentText>
+        <Box>
+          <Typography variant="h6">Nombre:</Typography>
+          <Typography>{name}</Typography>
+          <Typography variant="h6">Descripción:</Typography>
+          <Typography>{description}</Typography>
+          <br />
+          <Typography variant="h5">Desea borrar el registro, no se podra recuperar!</Typography>
+        </Box>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="primary">
           Cancelar
         </Button>
-        <Button onClick={onConfirm} color="secondary">
+        <Button onClick={handleDelete} color="primary">
           Eliminar
         </Button>
       </DialogActions>
