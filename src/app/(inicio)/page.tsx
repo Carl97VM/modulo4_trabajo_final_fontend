@@ -49,13 +49,13 @@ const HomePage: React.FC = () => {
 
   return (
     <Container maxWidth="sm">
-      <Navbar />
+      {/* <Navbar />
       <br />
       <Sectionreserva />
       <Sectionservicios />
       <Sectionopinion />
       <Contactanos />
-      <NewsList news={news} />
+      <NewsList news={news} /> */}
     </Container>
   )
 }

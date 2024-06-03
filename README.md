@@ -13,7 +13,7 @@ Una aplicación de noticias de tecnología construida con Next.js, TypeScript y 
 ## Estructura del Proyecto
 
 ```plaintext
-└── 📁Frontent
+└── 📁frontent
     └── .env
     └── .env.example
     └── .eslintrc.json

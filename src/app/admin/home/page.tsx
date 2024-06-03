@@ -13,19 +13,33 @@ import {
   Container,
   Typography,
 } from '@mui/material'
-import { productType, productSave } from '../../../types/Products'
+import { productType, productSave, productId } from '../../../types/Products'
 import { TableComponent } from '../../../components/table/tableSimple'
 import { ProductFormModal } from '../../../components/form/FormCreateProduct'
+import { ConfirmDeleteModal } from '../../../components/form/FormDeleteProduct'
+import { toast } from 'react-toastify';
+import '../../../styles/globals.css'
 
 const AdminHomePage = () => {
   const [resumenData, setResumenData] = useState<productType[]>([])
+  const [resumenDataDelete, setResumenDataDelete] = useState<productId>()
+  const [reloadData, setReloadData] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [currentProductId, setCurrentProductId] = useState<string | undefined>(undefined)
-  const [reloadData, setReloadData] = useState(false);
+  const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
+  const [currentProductIdDelete, setCurrentProductIdDelete] = useState<string | undefined>(undefined)
 
   const handleOpenModal = (productId: string | undefined = undefined) => {
     setCurrentProductId(productId)
     setIsModalOpen(true)
+  }
+  const handleDeleteConfirm = (productId: string) => {
+    setCurrentProductIdDelete(productId);
+    setIsModalOpenDelete(true);
+  };
+  const handleCloseModalDelete = () => {
+    setIsModalOpenDelete(false);
+    setCurrentProductIdDelete(undefined)
   }
 
   const handleCloseModal = () => {
@@ -43,10 +57,10 @@ const AdminHomePage = () => {
       } else {
         const newProduct: productType = {
           ...formData,
-          id: '', // Ajuste de ID y datos adicionales
+          id: '',
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-          userId: 1 // Ajuste según sea necesario
+          userId: 1
         }
         setReloadData(true);
         return [...prevData, newProduct]
@@ -54,33 +68,56 @@ const AdminHomePage = () => {
     })
     handleCloseModal()
   }
+  const handleFormSubmitDelete = (formData: productId) => {
+    const newProduct: productId = {
+      ...formData,
+      id: '',
+    }
+    handleCloseModalDelete()
+  }
+
+  const fetchProducts = async () => {
+    const token = leerCookie('token')
+    console.log("Token:: ", token)
+    try {
+      const response = await WebService.get({
+        url: `${Constantes.baseUrl}/api/products` ?? '',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      imprimir(response)
+      setResumenData(response)
+    } catch (error) {
+      eliminarCookie('token')
+      console.error('Error fetching user:', error)
+      redirect('/login')
+    }
+  }
+
+  const handleDelete = async (productId: string) => {
+    try {
+      const token = leerCookie('token');
+      const response = await WebService.delete({
+        url: `${Constantes.baseUrl}/api/products/${productId}`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      imprimir(response)
+      toast.success('Producto eliminado con éxito!');
+      setReloadData(true); // Esto desencadenará el useEffect en AdminHomePage.tsx
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      toast.error('Hubo un error al eliminar el producto.');
+    }
+  };
+
 
   useEffect(() => {
-    const fetchProduct = async () => {
-      const token = leerCookie('token')
-      console.log("Token:: ",token)
-      try {
-        const response = await WebService.get({
-          url: `${Constantes.baseUrl}/api/products` ?? '',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        imprimir(response)
-        setResumenData(response)
-      } catch (error) {
-        eliminarCookie('token')
-        console.error('Error fetching user:', error)
-        redirect('/login')
-      }
-    }
-  
-    fetchProduct()
+    fetchProducts()
   }, [reloadData])
 
-  useEffect(() => {
-    console.log('Productos: ', resumenData)
-  }, [resumenData])
 
   return (
     <Container maxWidth="sm" style={{ marginTop: '2rem' }}>
@@ -100,7 +137,7 @@ const AdminHomePage = () => {
           <Typography variant="h6" component="p">
             Registros
           </Typography>
-          <TableComponent products={resumenData} onEdit={handleOpenModal} />
+          <TableComponent products={resumenData} onEdit={handleOpenModal} onDelete={handleDeleteConfirm} />
         </CardContent>
       </Card>
 
@@ -110,6 +147,15 @@ const AdminHomePage = () => {
           onClose={handleCloseModal}
           onSubmit={handleFormSubmit}
           productId={currentProductId}
+          setReloadData={setReloadData}
+        />
+      )}
+      {isModalOpenDelete && (
+        <ConfirmDeleteModal
+          open={isModalOpenDelete}
+          onClose={handleCloseModalDelete}
+          onSubmit={handleFormSubmitDelete}
+          productId={currentProductIdDelete}
           setReloadData={setReloadData}
         />
       )}

@@ -13,6 +13,9 @@ import { WebService } from '../../services'; // Importa el WebService
 import { leerCookie } from '../../utils/cookies';
 import { Constantes } from '../../config'
 import { imprimir } from '../../utils/imprimir'
+import { toast } from 'react-toastify';
+import '../../styles/globals.css'
+
 interface ProductFormModalProps {
   open: boolean;
   onClose: () => void;
@@ -65,7 +68,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({ open, onClos
         const formData = { name, description, price: priceNumber };
         const token = leerCookie('token');
         response = await WebService.patch({
-          url: `${Constantes.baseUrl}/api/products/${productId}`, // Cambia esto a la ruta relativa
+          url: `${Constantes.baseUrl}/api/products/${productId}`,
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -75,12 +78,13 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({ open, onClos
         setResumenData(response);
         setReloadData(true);
         onSubmit(formData);
+        toast.success('Producto modificado con éxito!');
       } else {
         const priceNumber = Number(price);
         const formData = { name, description, price: priceNumber };
         const token = leerCookie('token');
         response = await WebService.post({
-          url: `${Constantes.baseUrl}/api/products`, // Cambia esto a la ruta relativa
+          url: `${Constantes.baseUrl}/api/products`,
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -90,15 +94,15 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({ open, onClos
         setResumenData(response);
         setReloadData(true);
         onSubmit(formData);
+        toast.success('Producto guardado con éxito!');
       }
       onClose();
     } catch (error) {
       console.error('Error submitting product:', error);
-      // Maneja el error aquí
+      toast.error('Hubo un error al realizar la accion');
     }
   };
   
-
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>{productId ? 'Editar Producto' : 'Nuevo Producto'}</DialogTitle>
