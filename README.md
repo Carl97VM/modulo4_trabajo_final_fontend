@@ -13,7 +13,8 @@ Una aplicación de noticias de tecnología construida con Next.js, TypeScript y 
 ## Estructura del Proyecto
 
 ```plaintext
-└── 📁frontent
+```
+└── 📁frontend
     └── .env
     └── .env.example
     └── .eslintrc.json
@@ -57,6 +58,9 @@ Una aplicación de noticias de tecnología construida con Next.js, TypeScript y 
             └── Contactanos.tsx
             └── Copyright.tsx
             └── 📁form
+                └── FormCreateProduct.tsx
+                └── FormDeleteProduct.tsx
+                └── FormEditProduct.tsx
                 └── FormInputAutocomplete.tsx
                 └── FormInputDate.tsx
                 └── FormInputDropdown.tsx
@@ -84,6 +88,8 @@ Una aplicación de noticias de tecnología construida con Next.js, TypeScript y 
             └── Sectionreserva.tsx
             └── Sectionservicios.css
             └── Sectionservicios.tsx
+            └── 📁table
+                └── tableSimple.tsx
         └── 📁config
             └── Constantes.ts
             └── fechas.ts
@@ -92,9 +98,12 @@ Una aplicación de noticias de tecnología construida con Next.js, TypeScript y 
         └── 📁services
             └── index.ts
             └── WebService.ts
+        └── 📁styles
+            └── globals.css
         └── theme.ts
         └── 📁types
             └── News.ts
+            └── Products.ts
         └── 📁utils
             └── cookies.ts
             └── imprimir.ts
