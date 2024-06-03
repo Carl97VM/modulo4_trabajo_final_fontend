@@ -1,25 +1,107 @@
-import React, { useState } from 'react';
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
-
+import React, { useEffect, useState } from 'react';
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField
+} from '@mui/material';
+import { productSave, productType } from '../../types/Products';
+import { WebService } from '../../services'; // Importa el WebService
+import { leerCookie } from '../../utils/cookies';
+import { Constantes } from '../../config'
+import { imprimir } from '../../utils/imprimir'
 interface ProductFormModalProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: (formData: { name: string; description: string; price: string }) => void;
+  onSubmit: (formData: productSave) => void;
+  productId?: string;
+  setReloadData: (value: boolean) => void;
 }
 
-export const ProductFormModal: React.FC<ProductFormModalProps> = ({ open, onClose, onSubmit }) => {
+export const ProductFormModal: React.FC<ProductFormModalProps> = ({ open, onClose, onSubmit, productId }) => {
+  const [resumenData, setResumenData] = useState<productType[]>([])
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [price, setPrice] = useState('');
+  const [price, setPrice] = useState<number | string>('');
+  const [reloadData, setReloadData] = useState(false);
 
-  const handleSubmit = () => {
-    // Valida los datos y envía el formulario
-    onSubmit({ name, description, price });
+  useEffect(() => {
+    if (productId) {
+      // Fetch product data for editing
+      const fetchProduct = async () => {
+        const token = leerCookie('token');
+        try {
+          const response = await WebService.get({
+            url: `${Constantes.baseUrl}/api/products/${productId}`, // Cambia esto a la ruta relativa
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          setName(response.name);
+          setDescription(response.description);
+          setPrice(response.price);
+          setReloadData(false);
+        } catch (error) {
+          console.error('Error fetching product:', error);
+        }
+      };
+      fetchProduct();
+    } else {
+      // Reset form for new product
+      setName('');
+      setDescription('');
+      setPrice('');
+    }
+  }, [productId]);
+
+  const handleSubmit = async () => {
+    try {
+      let response;
+      if (productId) {
+        const priceNumber = Number(price);
+        const formData = { name, description, price: priceNumber };
+        const token = leerCookie('token');
+        response = await WebService.patch({
+          url: `${Constantes.baseUrl}/api/products/${productId}`, // Cambia esto a la ruta relativa
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        });
+        imprimir(response)
+        setResumenData(response);
+        setReloadData(true);
+        onSubmit(formData);
+      } else {
+        const priceNumber = Number(price);
+        const formData = { name, description, price: priceNumber };
+        const token = leerCookie('token');
+        response = await WebService.post({
+          url: `${Constantes.baseUrl}/api/products`, // Cambia esto a la ruta relativa
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        });
+        imprimir(response)
+        setResumenData(response);
+        setReloadData(true);
+        onSubmit(formData);
+      }
+      onClose();
+    } catch (error) {
+      console.error('Error submitting product:', error);
+      // Maneja el error aquí
+    }
   };
+  
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Nuevo Producto</DialogTitle>
+      <DialogTitle>{productId ? 'Editar Producto' : 'Nuevo Producto'}</DialogTitle>
       <DialogContent>
         <Box>
           <TextField
@@ -47,7 +129,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({ open, onClos
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="secondary">
+        <Button onClick={onClose} color="primary">
           Cancelar
         </Button>
         <Button onClick={handleSubmit} color="primary">

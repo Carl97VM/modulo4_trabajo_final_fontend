@@ -10,49 +10,55 @@ import {
   Button,
   Card,
   CardContent,
-  CircularProgress,
   Container,
   Typography,
 } from '@mui/material'
-import { productType } from '../../../types/Products'
+import { productType, productSave } from '../../../types/Products'
 import { TableComponent } from '../../../components/table/tableSimple'
 import { ProductFormModal } from '../../../components/form/FormCreateProduct'
+
 const AdminHomePage = () => {
   const [resumenData, setResumenData] = useState<productType[]>([])
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [currentProductId, setCurrentProductId] = useState<string | undefined>(undefined)
+  const [reloadData, setReloadData] = useState(false);
 
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
+  const handleOpenModal = (productId: string | undefined = undefined) => {
+    setCurrentProductId(productId)
+    setIsModalOpen(true)
+  }
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
+    setIsModalOpen(false)
+    setCurrentProductId(undefined)
+  }
 
-  const handleSubmitForm = async () => { async (formData: any) => {
-    const token = leerCookie('token')
-    try {
-      const response = await WebService.post({
-        url: `${Constantes.baseUrl}/api/products` ?? '',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: { formData: formData }
-      })
-      imprimir(response)
-      console.log(formData);
-      setIsModalOpen(false); // Cerrar el modal después de enviar el formulario
-      setResumenData(response)
-    } catch (error) {
-      eliminarCookie('token')
-      console.error('Error al guardar:', error)
-      redirect('/login')
-    }
-    
-  }};
+  const handleFormSubmit = (formData: productSave) => {
+    setResumenData((prevData) => {
+      if (currentProductId) {
+        setReloadData(true);
+        return prevData.map((product) =>
+          product.id === currentProductId ? { ...product, ...formData } : product
+        )
+      } else {
+        const newProduct: productType = {
+          ...formData,
+          id: '', // Ajuste de ID y datos adicionales
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          userId: 1 // Ajuste según sea necesario
+        }
+        setReloadData(true);
+        return [...prevData, newProduct]
+      }
+    })
+    handleCloseModal()
+  }
+
   useEffect(() => {
     const fetchProduct = async () => {
       const token = leerCookie('token')
+      console.log("Token:: ",token)
       try {
         const response = await WebService.get({
           url: `${Constantes.baseUrl}/api/products` ?? '',
@@ -61,7 +67,6 @@ const AdminHomePage = () => {
           },
         })
         imprimir(response)
-
         setResumenData(response)
       } catch (error) {
         eliminarCookie('token')
@@ -69,17 +74,16 @@ const AdminHomePage = () => {
         redirect('/login')
       }
     }
-
+  
     fetchProduct()
-  }, [])
+  }, [reloadData])
 
   useEffect(() => {
-    console.log('user: ', resumenData)
+    console.log('Productos: ', resumenData)
   }, [resumenData])
 
   return (
     <Container maxWidth="sm" style={{ marginTop: '2rem' }}>
-
       <Card>
         <CardContent>
           <Typography variant="h4" component="h1" gutterBottom>
@@ -89,19 +93,26 @@ const AdminHomePage = () => {
             Bienvenido, user1@example.com. Aquí puedes gestionar la aplicación.
           </Typography>
           <Box mt={2}>
-            <Button onClick={handleOpenModal} variant="contained" color="primary">
+            <Button onClick={() => handleOpenModal(undefined)} variant="contained" color="primary">
               Nuevo Producto
             </Button>
-            <ProductFormModal open={isModalOpen} onClose={handleCloseModal} onSubmit={handleSubmitForm} />
           </Box>
           <Typography variant="h6" component="p">
             Registros
           </Typography>
-          <TableComponent product={resumenData} />
+          <TableComponent products={resumenData} onEdit={handleOpenModal} />
         </CardContent>
       </Card>
 
-
+      {isModalOpen && (
+        <ProductFormModal
+          open={isModalOpen}
+          onClose={handleCloseModal}
+          onSubmit={handleFormSubmit}
+          productId={currentProductId}
+          setReloadData={setReloadData}
+        />
+      )}
     </Container>
   )
 }

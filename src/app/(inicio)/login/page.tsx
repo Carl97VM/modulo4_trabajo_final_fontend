@@ -30,9 +30,13 @@ const LoginContainer = () => {
         body: { email: usuario, password: contrasena },
       })
       imprimir(`URL DE ACCESO:: ${Constantes.baseUrl}/api/auth/login`)
-      guardarCookie('token', response.token)
-
-      router.replace('/admin/home')
+      if (response && response.access_token) {
+        guardarCookie('token', response.access_token)
+        router.replace('/admin/home')
+      } else {
+        // Manejar el caso en que la respuesta no incluye un token
+        console.error('La respuesta del servidor no incluye un token.')
+      }
 
       console.log(response)
     } catch (error) {
