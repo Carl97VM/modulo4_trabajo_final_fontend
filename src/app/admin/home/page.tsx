@@ -21,83 +21,70 @@ import { toast } from 'react-toastify';
 import '../../../styles/globals.css'
 
 const AdminHomePage = () => {
-  const [resumenData, setResumenData] = useState<productType[]>([])
+  const [resumenData, setResumenData] = useState<productType[]>([]);
   const [reloadData, setReloadData] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [currentProductId, setCurrentProductId] = useState<string | undefined>(undefined)
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentProductId, setCurrentProductId] = useState<string | undefined>(undefined);
 
   const handleOpenModal = (productId: string | undefined = undefined) => {
-    setCurrentProductId(productId)
-    setIsModalOpen(true)
-  }
+    setCurrentProductId(productId);
+    setIsModalOpen(true);
+  };
 
   const handleCloseModal = () => {
-    setIsModalOpen(false)
-    setCurrentProductId(undefined)
-  }
+    setIsModalOpen(false);
+    setCurrentProductId(undefined);
+  };
 
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
-  const [productIdToDelete, setProductIdToDelete] = useState<string | undefined>(undefined)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [productIdToDelete, setProductIdToDelete] = useState<string | undefined>(undefined);
 
   const handleOpenDeleteModal = (productId: string) => {
-    setProductIdToDelete(productId)
-    setIsDeleteModalOpen(true)
-  }
+    setProductIdToDelete(productId);
+    setIsDeleteModalOpen(true);
+  };
 
   const handleCloseDeleteModal = () => {
-    setIsDeleteModalOpen(false)
-    setProductIdToDelete(undefined)
-  }
+    setIsDeleteModalOpen(false);
+    setProductIdToDelete(undefined);
+  };
+
   const handleDeleteSubmit = (productId: string) => {
-    setResumenData((prevData) => prevData.filter((product) => product.id !== productId))
-    setReloadData(true);
-  }
+    setResumenData((prevData) => prevData.filter((product) => product.id !== productId));
+    setReloadData(true); // Forzar la recarga de datos
+  };
 
   const handleFormSubmit = (formData: productSave) => {
-    setResumenData((prevData) => {
-      if (currentProductId) {
-        setReloadData(true);
-        return prevData.map((product) =>
-          product.id === currentProductId ? { ...product, ...formData } : product
-        )
-      } else {
-        const newProduct: productType = {
-          ...formData,
-          id: '',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          userId: 1
-        }
-        setReloadData(true);
-        return [...prevData, newProduct]
-      }
-    })
-    handleCloseModal()
-  }
+    setResumenData((prevData) =>
+      prevData.map((product) =>
+        product.id === currentProductId ? { ...product, ...formData } : product
+      )
+    );
+    setReloadData(true); // Forzar la recarga de datos
+    handleCloseModal();
+  };
 
   const fetchProducts = async () => {
-    const token = leerCookie('token')
-    console.log("Token:: ", token)
+    const token = leerCookie('token');
     try {
       const response = await WebService.get({
         url: `${Constantes.baseUrl}/api/products` ?? '',
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      })
-      imprimir(response)
-      setResumenData(response)
+      });
+      imprimir(response);
+      setResumenData(response);
     } catch (error) {
-      eliminarCookie('token')
-      console.error('Error fetching user:', error)
-      redirect('/login')
+      eliminarCookie('token');
+      console.error('Error fetching user:', error);
+      redirect('/login');
     }
-  }
-
+  };
 
   useEffect(() => {
-    fetchProducts()
-  }, [reloadData])
+    fetchProducts();
+  }, [reloadData]);
 
 
   return (
@@ -111,7 +98,7 @@ const AdminHomePage = () => {
             Bienvenido, user1@example.com. Aquí puedes gestionar la aplicación.
           </Typography>
           <Box mt={2}>
-            <Button onClick={() => handleOpenModal(undefined)} variant="contained" color="primary">
+            <Button onClick={() => handleOpenModal(undefined)} variant="contained" color="primary" data-testid="nuevoProducto">
               Nuevo Producto
             </Button>
           </Box>
@@ -128,7 +115,7 @@ const AdminHomePage = () => {
           onClose={handleCloseModal}
           onSubmit={handleFormSubmit}
           productId={currentProductId}
-          setReloadData={setReloadData}
+          setReloadData={setReloadData} // Asegúrate de pasar esta función
         />
       )}
       {isDeleteModalOpen && (
@@ -140,9 +127,8 @@ const AdminHomePage = () => {
           setReloadData={setReloadData} // Asegúrate de pasar esta función
         />
       )}
-
     </Container>
-  )
+  );
 }
 
 export default AdminHomePage

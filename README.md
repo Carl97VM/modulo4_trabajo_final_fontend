@@ -153,6 +153,21 @@ npm run dev
 yarn dev
 ```
 
+### Ejecución de Pruebas
+``` bash
+npx cypress open
+## las credenciales de acceso ya estan dentro de los test
+```
+## El listado sera el siguiente:
+- alterno boton editar
+- alterno boton eliminar
+- alterno logout
+- criticos crear
+- criticos eliminar
+- criticos leer
+- criticos login
+- criticos modificar
+
 Abre [http://localhost:3000](http://localhost:3000) en tu navegador para ver la aplicación.
 
 ### Configuración de Imágenes

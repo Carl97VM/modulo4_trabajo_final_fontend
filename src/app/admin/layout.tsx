@@ -22,6 +22,7 @@ const Layout: React.FC<PropsWithChildren> = ({ children }) => {
           </Typography>
           <Button
             color="primary"
+            data-testid="logoutButton"
             onClick={() => {
               eliminarCookie('token')
               router.replace('/login')

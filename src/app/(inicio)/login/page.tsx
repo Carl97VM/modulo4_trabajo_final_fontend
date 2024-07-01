@@ -124,6 +124,7 @@ const LoginContainer = () => {
               <Button
                 type="submit"
                 variant="contained"
+                data-testid="acceder"
                 fullWidth
                 disabled={loading}
               >

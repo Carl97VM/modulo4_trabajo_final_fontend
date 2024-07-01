@@ -12,24 +12,34 @@ interface TableComponentProps {
 
 export const TableComponent: React.FC<TableComponentProps> = ({ products, onEdit, onDelete }) => {
   return (
-    <Table>
+    <Table data-testid="productsTable">
       <TableHead>
         <TableRow>
-          <TableCell>Nombre</TableCell>
-          <TableCell>Descripción</TableCell>
-          <TableCell>Precio</TableCell>
-          <TableCell>Acciones</TableCell>
+          <TableCell data-testid="headerName">Nombre</TableCell>
+          <TableCell data-testid="headerDescription">Descripción</TableCell>
+          <TableCell data-testid="headerPrice">Precio</TableCell>
+          <TableCell data-testid="headerActions">Acciones</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
         {products.map((product) => (
-          <TableRow key={product.id}>
+          <TableRow key={product.id} data-testid={`productRow-${product.id}`}>
             <TableCell>{product.name}</TableCell>
             <TableCell>{product.description}</TableCell>
             <TableCell>{product.price}</TableCell>
             <TableCell>
-              <Button onClick={() => onEdit(product.id.toString())}>Editar <EditIcon /></Button>
-              <Button onClick={() => onDelete(product.id)}>Eliminar <DeleteIcon /></Button>
+              <Button
+                onClick={() => onEdit(product.id.toString())}
+                data-testid={`editButton-${product.id}`}
+              >
+                Editar <EditIcon />
+              </Button>
+              <Button
+                onClick={() => onDelete(product.id)}
+                data-testid={`deleteButton-${product.id}`}
+              >
+                Eliminar <DeleteIcon />
+              </Button>
             </TableCell>
           </TableRow>
         ))}

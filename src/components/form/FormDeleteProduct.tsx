@@ -24,7 +24,6 @@ interface ConfirmDeleteModalProps {
   setReloadData: (value: boolean) => void;
 }
 
-
 export const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({ open, onClose, onSubmit, productId }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -77,25 +76,24 @@ export const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({ open, on
     }
   };
 
-
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open} onClose={onClose} data-testid="confirmDeleteModal">
       <DialogTitle>Eliminar Producto</DialogTitle>
       <DialogContent>
         <Box>
           <Typography variant="h6">Nombre:</Typography>
-          <Typography>{name}</Typography>
+          <Typography data-testid="productName">{name}</Typography>
           <Typography variant="h6">Descripción:</Typography>
-          <Typography>{description}</Typography>
+          <Typography data-testid="productDescription">{description}</Typography>
           <br />
-          <Typography variant="h5">Desea borrar el registro, no se podra recuperar!</Typography>
+          <Typography variant="h5">Desea borrar el registro, no se podrá recuperar!</Typography>
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="primary">
+        <Button onClick={onClose} color="primary" data-testid="cancelDeleteButton">
           Cancelar
         </Button>
-        <Button onClick={handleDelete} color="primary">
+        <Button onClick={handleDelete} color="primary" data-testid="confirmDeleteButton">
           Eliminar
         </Button>
       </DialogActions>
